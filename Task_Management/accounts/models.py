@@ -31,7 +31,7 @@ class CustomUserManager(BaseUserManager):
 
 
 
-class TaskUser(AbstractUser):
+class User(AbstractUser):
     email = models.CharField(max_length=80, unique=True)
     username = models.CharField(max_length=45)
    

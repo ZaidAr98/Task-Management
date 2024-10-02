@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.validators import ValidationError
 
-from .models import TaskUser
+from .models import User
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -11,12 +11,12 @@ class SignUpSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=4, write_only=True)
 
     class Meta:
-        model = TaskUser
+        model = User
         fields = ["email", "username", "password"]
 
     def validate(self, attrs):
 
-        email_exists = TaskUser.objects.filter(email=attrs["email"]).exists()
+        email_exists = User.objects.filter(email=attrs["email"]).exists()
 
         if email_exists:
             raise ValidationError("Email has already been used")
