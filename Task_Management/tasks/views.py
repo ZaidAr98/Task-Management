@@ -1,39 +1,26 @@
 from rest_framework import generics, permissions
-from .models import Task
-from .serializers import TaskSerializer
-from rest_framework import generics, mixins
+from rest_framework.response import Response
 from rest_framework.request import Request
-from .permissions import  AuthorOrReadOnly
+from rest_framework import status
+from rest_framework import generics, mixins
+from .permissions import  AuthorOrReadOnly,IsSuperUser
 from .models import Task
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from .serializers import UserSerializer
+from .serializers import TaskSerializer
 from django.utils import timezone
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 
-# class TaskListCreateView(
-#     generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin
-# ):
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsSuperUser]
 
-
-#     serializer_class = TaskSerializer
-#     permission_classes = [permissions.IsAuthenticated]
- 
-#     queryset = Task.objects.all()
-
-#     def perform_create(self, serializer):
-#         user = self.request.user
-#         serializer.save(owner=user)
-#         return super().perform_create(serializer)
-
-#     def get(self, request: Request, *args, **kwargs):
-#         return self.list(request, *args, **kwargs)
-
-#     def post(self, request: Request, *args, **kwargs):
-#         return self.create(request, *args, **kwargs)
-    
 
 
 class PostRetrieveUpdateDeleteView(
@@ -106,3 +93,42 @@ class UserTaskListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class TaskListCreateView(
+#     generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin
+# ):
+
+
+#     serializer_class = TaskSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+ 
+#     queryset = Task.objects.all()
+
+#     def perform_create(self, serializer):
+#         user = self.request.user
+#         serializer.save(owner=user)
+#         return super().perform_create(serializer)
+
+#     def get(self, request: Request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+
+#     def post(self, request: Request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+    
