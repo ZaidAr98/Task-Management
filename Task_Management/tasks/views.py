@@ -1,14 +1,14 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions,viewsets
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
 from rest_framework import generics, mixins
 from .permissions import  AuthorOrReadOnly,IsSuperUser
-from .models import Task
+from .models import Task,Category
 from rest_framework.views import APIView
-from .serializers import UserSerializer
-from .serializers import TaskSerializer
+from .serializers import UserSerializer, TaskSerializer,CategorySerializer
 from django.utils import timezone
+from rest_framework.decorators import action
 
 from django.contrib.auth import get_user_model
 
@@ -44,6 +44,9 @@ class PostRetrieveUpdateDeleteView(
         return self.destroy(request, *args, **kwargs)
     
 
+
+
+
 class MarkTaskCompleteView(APIView):
     permission_classes = [permissions.IsAuthenticated,AuthorOrReadOnly]
 
@@ -61,6 +64,10 @@ class MarkTaskCompleteView(APIView):
         task.completed_at = timezone.now()
         task.save()
         return Response({'status': 'Task marked as complete.'}, status=status.HTTP_200_OK)
+
+
+
+
 
 class MarkTaskIncompleteView(APIView):
     permission_classes = [permissions.IsAuthenticated,AuthorOrReadOnly]
@@ -86,9 +93,9 @@ class MarkTaskIncompleteView(APIView):
 class UserTaskListCreateView(generics.ListCreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated,AuthorOrReadOnly]
-    filterset_fields = ['status', 'priority', 'due_date']
+    filterset_fields = ['status', 'priority', 'due_date', 'category']
     ordering_fields = ['due_date', 'priority']
-
+    
 
 
 
@@ -101,13 +108,22 @@ class UserTaskListCreateView(generics.ListCreateAPIView):
 
 
 
+class CategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
-
-
-
-
+    # Custom actions if needed, for example:
+    @action(detail=False, methods=['get'])
+    def my_custom_action(self, request):
+        # Custom logic here
+        return Response({"message": "Custom action response"}, status=status.HTTP_200_OK)
+    
 
 
 
