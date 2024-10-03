@@ -23,6 +23,7 @@ class UserListView(generics.ListAPIView):
 
 
 
+
 class PostRetrieveUpdateDeleteView(
     generics.GenericAPIView,
     mixins.RetrieveModelMixin,
@@ -85,6 +86,9 @@ class MarkTaskIncompleteView(APIView):
 class UserTaskListCreateView(generics.ListCreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated,AuthorOrReadOnly]
+    filterset_fields = ['status', 'priority', 'due_date']
+    ordering_fields = ['due_date', 'priority']
+
 
 
 
