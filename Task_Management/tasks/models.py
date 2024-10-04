@@ -17,6 +17,13 @@ class Task(models.Model):
         ('Pending', 'Pending'),
         ('Completed', 'Completed'),
     ]
+
+    RECURRENCE_CHOICES = [
+        ('None', 'None'),
+        ('Daily', 'Daily'),
+        ('Weekly', 'Weekly'),
+        ('Monthly', 'Monthly'),
+    ]
    
 
     title = models.CharField(max_length=255)
@@ -27,7 +34,8 @@ class Task(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
     completed_at = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
-
+    recurrence = models.CharField(max_length=7, choices=RECURRENCE_CHOICES, default='None')
+    
     def __str__(self):
         return self.title
 
