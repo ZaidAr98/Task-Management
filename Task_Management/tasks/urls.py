@@ -23,6 +23,8 @@ urlpatterns = [
     path('tasks/own/', views.UserTaskListCreateView.as_view(), name='own-task-list'), 
      path('category/', category_list, name='category-list'),
     path('category/<int:pk>/', category_detail, name='category-detail'),
+    path('send-notification/', views.OnDemandNotificationView.as_view(), name='send-notification'),
+
    
 ]
 

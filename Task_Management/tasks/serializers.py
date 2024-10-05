@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.utils import timezone
 from .models import Task, Category
 from django.contrib.auth import get_user_model
+from .models import Notification
 
 User = get_user_model()
 
@@ -53,3 +54,26 @@ class TaskSerializer(serializers.ModelSerializer):
         return data
 
 
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
+        read_only_fields = ('user', 'task', 'created_at')
+
+
+class SendNotificationSerializer(serializers.Serializer):
+    task_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=True,
+        help_text="List of task IDs to send notifications for."
+    )
+    message = serializers.CharField(
+        required=False,
+        help_text="Custom message to include in the notification."
+    )
+
+    def validate_task_ids(self, value):
+        if not value:
+            raise serializers.ValidationError("At least one task ID must be provided.")
+        return value

@@ -35,7 +35,7 @@ class Task(models.Model):
     completed_at = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
     recurrence = models.CharField(max_length=7, choices=RECURRENCE_CHOICES, default='None')
-    
+
     def __str__(self):
         return self.title
 
@@ -51,3 +51,15 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.message}"

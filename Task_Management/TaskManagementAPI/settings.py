@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'rest_framework',  
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'tasks'
   
 ]
@@ -163,3 +165,17 @@ DATABASES = {
 
 
 AUTH_USER_MODEL = "accounts.User"
+
+
+
+
+
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'arkanmedex@gmail.com'  
+EMAIL_HOST_PASSWORD = 'xlcy ddxn byjy mmnt'  
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

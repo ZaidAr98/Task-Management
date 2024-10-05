@@ -1,15 +1,16 @@
-from rest_framework import generics, permissions,viewsets
+from rest_framework import generics, permissions,viewsets,status
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework import status
 from rest_framework import generics, mixins
 from .permissions import  AuthorOrReadOnly,IsSuperUser
 from .models import Task,Category
 from rest_framework.views import APIView
-from .serializers import UserSerializer, TaskSerializer,CategorySerializer
+from .serializers import UserSerializer, TaskSerializer,CategorySerializer,SendNotificationSerializer
 from django.utils import timezone
 from rest_framework.decorators import action
-
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Task, Notification
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -127,28 +128,54 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 
+class OnDemandNotificationView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = SendNotificationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        task_ids = serializer.validated_data['task_ids']
+        custom_message = serializer.validated_data.get('message', '')
+
+     
+        tasks = Task.objects.filter(id__in=task_ids, owner=request.user)
+
+        if not tasks.exists():
+            return Response(
+                {"detail": "No tasks found for the given IDs."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        notifications = []
+
+        for task in tasks:
+            subject = f"Notification: Task '{task.title}'"
+            if custom_message:
+                message = custom_message
+            else:
+                message = f"Dear {request.user.username},\n\nThis is a notification for your task '{task.title}'.\n\nBest regards,\nTask Management Team"
+
+            recipient_list = [request.user.email]
+
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                recipient_list,
+                fail_silently=False,
+            )
+
+           
+            notification = Notification.objects.create(
+                user=request.user,
+                task=task,
+                message=message
+            )
+            notifications.append(notification)
 
 
+        from .serializers import NotificationSerializer
+        notification_serializer = NotificationSerializer(notifications, many=True)
 
-
-# class TaskListCreateView(
-#     generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin
-# ):
-
-
-#     serializer_class = TaskSerializer
-#     permission_classes = [permissions.IsAuthenticated]
- 
-#     queryset = Task.objects.all()
-
-#     def perform_create(self, serializer):
-#         user = self.request.user
-#         serializer.save(owner=user)
-#         return super().perform_create(serializer)
-
-#     def get(self, request: Request, *args, **kwargs):
-#         return self.list(request, *args, **kwargs)
-
-#     def post(self, request: Request, *args, **kwargs):
-#         return self.create(request, *args, **kwargs)
+        return Response(notification_serializer.data, status=status.HTTP_200_OK)
     
