@@ -188,11 +188,11 @@ AUTH_USER_MODEL = "accounts.User"
 
 
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('CLEARDB_DATABASE_URL')
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.environ.get('CLEARDB_DATABASE_URL')
+#     )
+# }
 
 # settings.py
 
@@ -207,3 +207,10 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 
+DATABASES = {  'default': dj_database_url.config(
+        default= os.env('DATABASE_URL')
+    )
+}
+
+# Optional: Enable Persistent Connections
+DATABASES['default']['CONN_MAX_AGE'] = 500
