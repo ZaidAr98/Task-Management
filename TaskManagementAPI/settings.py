@@ -38,7 +38,8 @@ DEBUG = False
 #     '127.0.0.1'
 # ]
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['capstone-task-managemt-7e87cf4b9f34.herokuapp.com']
+
 
 # Application definition
 
