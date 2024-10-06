@@ -30,7 +30,13 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split()
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '').split()
+
+
+ALLOWED_HOSTS = allowed_hosts_env + [
+    'capstone-task-managem-38aceedb9006.herokuapp.com',
+    '127.0.0.1'
+]
 
 
 # Application definition
