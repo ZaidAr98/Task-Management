@@ -38,7 +38,8 @@ DEBUG = False
 #     '127.0.0.1'
 # ]
 
-AllOWED_HOST = []
+ALLOWED_HOSTS = []
+
 # Application definition
 
 INSTALLED_APPS = [
