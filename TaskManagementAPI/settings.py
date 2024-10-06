@@ -214,3 +214,9 @@ DATABASES = {  'default': dj_database_url.config(
 
 # Optional: Enable Persistent Connections
 DATABASES['default']['CONN_MAX_AGE'] = 500
+
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/media/'
+
