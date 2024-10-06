@@ -188,6 +188,11 @@ AUTH_USER_MODEL = "accounts.User"
 
 
 
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('CLEARDB_DATABASE_URL')
+    )
+}
 
 # settings.py
 
@@ -202,7 +207,3 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 
-
-DATABASES = {
-    'default': dj_database_url.config(default='postgres://localhost')
-}
