@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
 from tasks.models import Task 
-from TaskManagementAPI import settings
+from . import settings
 
 class Command(BaseCommand):
     help = 'Send notifications for tasks due soon or overdue.'
