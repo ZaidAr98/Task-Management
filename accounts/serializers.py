@@ -5,6 +5,8 @@ from rest_framework.validators import ValidationError
 from .models import User
 
 
+# desc      Register user Serilizer  
+
 class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=80)
     username = serializers.CharField(max_length=45)
@@ -13,6 +15,8 @@ class SignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "username", "password"]
+
+# desc      Validate  user  using  email instead of username
 
     def validate(self, attrs):
 

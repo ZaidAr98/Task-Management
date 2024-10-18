@@ -7,8 +7,11 @@ from rest_framework.views import APIView
 from .serializers import SignUpSerializer
 from .tokens import create_jwt_pair_for_user
 from rest_framework_simplejwt.tokens import RefreshToken
-# Create your views here.
 
+
+# desc      Register user
+# url       POST /api/v1/auth/signup
+# access    Public
 
 class SignUpView(generics.GenericAPIView):
     serializer_class = SignUpSerializer
@@ -27,6 +30,11 @@ class SignUpView(generics.GenericAPIView):
             return Response(data=response, status=status.HTTP_201_CREATED)
 
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# desc      login user
+# url       POST /api/v1/auth/login/
+# access    Public
 
 
 class LoginView(APIView):
@@ -53,6 +61,12 @@ class LoginView(APIView):
 
         return Response(data=content, status=status.HTTP_200_OK)
     
+    
+
+
+# desc      Log user out / clear token
+# url       GET /api/v1/auth/logout/
+# access    Private
 
 
 class LogoutView(APIView):
@@ -74,7 +88,7 @@ class LogoutView(APIView):
                 {"message": "Logout successful."},
                 status=status.HTTP_205_RESET_CONTENT
             )
-        except Exception as e:
+        except :
             return Response(
                 {"error": "Invalid or expired token."},
                 status=status.HTTP_400_BAD_REQUEST
