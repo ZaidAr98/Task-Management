@@ -33,7 +33,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'due_date', 'priority', 'status', 'owner', 'completed_at','category','category_id','recurrence']
+        fields = ['id', 'title', 'description', 'due_date', 'priority', 'status', 'owner','category','category_id','recurrence','next_due_date','created_at']
         read_only_fields = ['owner'] 
 
     def validate_due_date(self, value):
