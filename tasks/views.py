@@ -1,3 +1,4 @@
+from datetime import timedelta
 from rest_framework import generics, permissions,viewsets,status
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -97,9 +98,6 @@ class UserTaskListCreateView(generics.ListCreateAPIView):
     filterset_fields = ['status', 'priority', 'due_date', 'category']
     ordering_fields = ['due_date', 'priority']
     
-
-
-
     def get_queryset(self):
             return Task.objects.filter(owner=self.request.user)
 
@@ -119,10 +117,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    # Custom actions if needed, for example:
+  
     @action(detail=False, methods=['get'])
     def my_custom_action(self, request):
-        # Custom logic here
+   
         return Response({"message": "Custom action response"}, status=status.HTTP_200_OK)
     
 
@@ -145,16 +143,34 @@ class OnDemandNotificationView(APIView):
                 {"detail": "No tasks found for the given IDs."},
                 status=status.HTTP_404_NOT_FOUND
             )
+    
+    
 
         notifications = []
 
         for task in tasks:
-            subject = f"Notification: Task '{task.title}'"
-            if custom_message:
+    
+            time_difference = task.due_date - timezone.now().date()
+
+       
+            if time_difference < timedelta(days=1):
+                message = (
+                    f"Dear {request.user.username},"
+                    f"This is an urgent notification for your task '{task.title}'."
+                    f"There is less than one day to finish your task. Please hurry up!"
+                    f"Best regards,\nTask Management Team"
+                )
+            elif custom_message:
                 message = custom_message
             else:
-                message = f"Dear {request.user.username},\n\nThis is a notification for your task '{task.title}'.\n\nBest regards,\nTask Management Team"
+                message = (
+                    f"Dear {request.user.username},"
+                    f"This is a notification for your task '{task.title}'."
+                    f"Best regards,Task Management Team"
+                )
 
+        
+            subject = f"Notification: Task '{task.title}'"
             recipient_list = [request.user.email]
 
             send_mail(
