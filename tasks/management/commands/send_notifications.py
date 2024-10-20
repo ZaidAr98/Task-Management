@@ -32,8 +32,8 @@ class Command(BaseCommand):
             status='Pending',
             is_notified=False
         ).filter(
-            Q(due_date__gte=today, due_date__lte=tomorrow) |
-            Q(next_due_date__gte=today, next_due_date__lte=tomorrow)
+            Q(due_date=tomorrow) |
+            Q(next_due_date = tomorrow)
         ).select_related('owner')
 
         self.stdout.write(f"Total tasks found for notification: {tasks_to_notify.count()}")
@@ -58,7 +58,7 @@ class Command(BaseCommand):
 
             time_difference = due_date - today 
 
-            if time_difference < timedelta(days=1):
+            if time_difference <= timedelta(days=1):
                 message = (
                     f"Dear {user.username},\n\n"
                     f"This is an urgent notification for your task '{task.title}'.\n"
@@ -98,15 +98,16 @@ class Command(BaseCommand):
                 task.save()
 
                 
-                if task.recurrence != 'None':
+                if task.recurrence != 'None' and task.is_notified == True :
                     if task.recurrence == 'Daily':
                         task.next_due_date = due_date + timedelta(days=1)
                     elif task.recurrence == 'Weekly':
                         task.next_due_date = due_date + timedelta(weeks=1)
                     elif task.recurrence == 'Monthly':
                         task.next_due_date = due_date + timedelta(days=30)
-                    task.is_notified = False 
-                    task.save()
+                 
+                task.is_notified = False
+                task.save()
 
             except Exception as e:
                 error_message = f"Failed to send email to {user.email} for task '{task.title}': {e}"
