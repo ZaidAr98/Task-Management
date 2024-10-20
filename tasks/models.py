@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from datetime import timedelta
+from datetime import datetime
 User = get_user_model()
 
 
@@ -28,15 +29,16 @@ class Task(models.Model):
 
     title = models.CharField(max_length=255)
     description = models.TextField()
-    due_date = models.DateField()
+    due_date = models.DateField()  
     priority = models.CharField(max_length=6, choices=PRIORITY_LEVELS)
     status = models.CharField(max_length=9, choices=STATUS_CHOICES, default='Pending')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
     recurrence = models.CharField(max_length=7, choices=RECURRENCE_CHOICES, default='None')
-    next_due_date = models.DateField(null=True, blank=True)
+    next_due_date = models.DateField(null=True, blank=True)  
     created_at = models.DateField(auto_now_add=True)
-    
+    is_notified = models.BooleanField(default=False) 
+
     def save(self, *args, **kwargs):
         current_time = timezone.now()
         if self.recurrence == "Daily" and self.due_date:
@@ -48,6 +50,7 @@ class Task(models.Model):
         else:
             self.next_due_date = None
         super().save(*args, **kwargs)
+    
 
 
 class Category(models.Model):
